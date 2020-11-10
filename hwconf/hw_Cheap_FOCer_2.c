@@ -48,7 +48,13 @@ void hw_init_gpio(void) {
 			PAL_STM32_OSPEED_HIGHEST);
 	palSetPadMode(GPIOB, 1,
 			PAL_MODE_OUTPUT_PUSHPULL |
+                  PAL_STM32_OSPEED_HIGHEST);
+
+	// Buzzer / LED
+	palSetPadMode(GPIOB, 12,
+			PAL_MODE_OUTPUT_PUSHPULL |
 			PAL_STM32_OSPEED_HIGHEST);
+	BUZZER_OFF();
 
 	// ENABLE_GATE
 #ifdef HW60_VEDDER_FIRST_PCB

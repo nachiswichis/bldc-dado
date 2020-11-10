@@ -46,6 +46,9 @@
 #define CURRENT_FILTER_ON()		palSetPad(GPIOD, 2)
 #define CURRENT_FILTER_OFF()	palClearPad(GPIOD, 2)
 
+#define BUZZER_ON()         palSetPad(GPIOB, 12)
+#define BUZZER_OFF()        palClearPad(GPIOB, 12)
+
 // Switch on current filter if a permanent
 // NRF24 cannot be found, as the later
 // HW60 has changed one of the permanent NRF
