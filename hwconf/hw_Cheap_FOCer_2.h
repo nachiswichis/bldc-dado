@@ -20,7 +20,7 @@
 #ifndef HW_Cheap_FOCer_2
 #define HW_Cheap_FOCer_2
 
-#define HW_NAME					"Cheap FOCer 2"
+#define HW_NAME					"Cheap FOCer 2 v0.9"
 
 // HW properties
 #define HW_HAS_DRV8301
@@ -103,7 +103,7 @@
 #define VIN_R2					2200.0
 #endif
 #ifndef CURRENT_AMP_GAIN
-#define CURRENT_AMP_GAIN		10
+#define CURRENT_AMP_GAIN		20
 #endif
 #ifndef CURRENT_SHUNT_RES
 #define CURRENT_SHUNT_RES		0.0005
