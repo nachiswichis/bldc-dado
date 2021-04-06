@@ -1559,6 +1559,7 @@ void mc_interface_mc_timer_isr(bool is_second_motor) {
 		wrong_voltage_iterations++;
 
 		if ((wrong_voltage_iterations >= 8)) {
+			mc_interface_lock();
 			mc_interface_fault_stop(input_voltage < conf_now->l_min_vin ?
 					FAULT_CODE_UNDER_VOLTAGE : FAULT_CODE_OVER_VOLTAGE, is_second_motor, true);
 		}
