@@ -125,6 +125,19 @@ static THD_FUNCTION(adc_thread, arg) {
 		pwr /= 4095;
 		pwr *= V_REG;
 
+		// ADC1 Hall fault detection
+		// if the read value is too high
+		// - set voltage to 0
+		// - set current to 0
+		// - disable further control
+		if(pwr > config.voltage_end+0.2)
+		{
+			pwr=0;
+			mc_interface_set_current(0);
+			mc_interface_lock();
+			//mc_interface_fault_stop(FAULT_CODE_ADC1_HALL, !is_motor_1, false);
+		}
+
 		read_voltage = pwr;
 
 		// Optionally apply a mean value filter
