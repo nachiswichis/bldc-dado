@@ -20,7 +20,7 @@
 #ifndef HW_R7
 #define HW_R7
 
-#define HW_NAME					"Raiden-7 5.02"
+#define HW_NAME					"ZESC_Raiden7"
 #define INVERTED_SHUNT_POLARITY				
 
 // HW properties
