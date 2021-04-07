@@ -219,8 +219,35 @@
 #ifndef MCCONF_DEFAULT_MOTOR_TYPE
 #define MCCONF_DEFAULT_MOTOR_TYPE		MOTOR_TYPE_FOC
 #endif
+#ifndef MCCONF_L_CURRENT_MAX
+#define MCCONF_L_CURRENT_MAX			120.0	// Current limit in Amperes (Upper)
+#endif
+#ifndef MCCONF_L_IN_CURRENT_MAX
+#define MCCONF_L_IN_CURRENT_MAX			60.0	// Input current limit in Amperes (Upper)
+#endif
+#ifndef MCCONF_L_IN_CURRENT_MIN
+#define MCCONF_L_IN_CURRENT_MIN			-20.0	// Input current limit in Amperes (Lower)
+#endif
 #ifndef MCCONF_L_MAX_ABS_CURRENT
-#define MCCONF_L_MAX_ABS_CURRENT		150.0	// The maximum absolute current above which a fault is generated
+#define MCCONF_L_MAX_ABS_CURRENT		300.0	// The maximum absolute current above which a fault is generated
+#endif
+#ifndef MCCONF_L_MIN_VOLTAGE
+#define MCCONF_L_MIN_VOLTAGE			24.0		// Minimum input voltage
+#endif
+#ifndef MCCONF_L_MAX_VOLTAGE
+#define MCCONF_L_MAX_VOLTAGE			84.0	// Maximum input voltage
+#endif
+#ifndef MCCONF_FOC_F_SW
+#define MCCONF_FOC_F_SW					20000.0
+#endif
+#ifndef MCCONF_FOC_DT_US
+#define MCCONF_FOC_DT_US				0.20 // Microseconds for dead time compensation
+#endif
+#ifndef MCCONF_FOC_OPENLOOP_RPM
+#define MCCONF_FOC_OPENLOOP_RPM			1000.0	// Openloop RPM (sensorless low speed or when finding index pulse)
+#endif
+#ifndef MCCONF_FOC_D_GAIN_SCALE_MAX_MOD
+#define MCCONF_FOC_D_GAIN_SCALE_MAX_MOD	0.5		// D axis currnet controller gain at maximum modulation
 #endif
 #ifndef MCCONF_FOC_SAMPLE_V0_V7
 #define MCCONF_FOC_SAMPLE_V0_V7			false	// Run control loop in both v0 and v7 (requires phase shunts)
@@ -233,7 +260,7 @@
 #define HW_LIM_VIN			24.0, 84.0
 #define HW_LIM_ERPM			-400e3, 400e3
 #define HW_LIM_DUTY_MIN			0.0, 0.1
-#define HW_LIM_DUTY_MAX			0.0, 0.95
+#define HW_LIM_DUTY_MAX			0.0, 0.99
 #define HW_LIM_TEMP_FET			-40.0, 120.0
 
 #endif /* HW_R7 */
