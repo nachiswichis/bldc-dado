@@ -22,7 +22,7 @@
 
 // Default settings
 #ifndef MCCONF_DEFAULT_MOTOR_TYPE
-#define MCCONF_DEFAULT_MOTOR_TYPE		MOTOR_TYPE_BLDC
+#define MCCONF_DEFAULT_MOTOR_TYPE		MOTOR_TYPE_FOC
 #endif
 #ifndef MCCONF_PWM_MODE
 #define MCCONF_PWM_MODE					PWM_MODE_SYNCHRONOUS // Default PWM mode
@@ -36,31 +36,31 @@
 
 // Limits
 #ifndef MCCONF_L_CURRENT_MAX
-#define MCCONF_L_CURRENT_MAX			60.0	// Current limit in Amperes (Upper)
+#define MCCONF_L_CURRENT_MAX			120.0	// Current limit in Amperes (Upper)
 #endif
 #ifndef MCCONF_L_CURRENT_MIN
 #define MCCONF_L_CURRENT_MIN			-60.0	// Current limit in Amperes (Lower)
 #endif
 #ifndef MCCONF_L_IN_CURRENT_MAX
-#define MCCONF_L_IN_CURRENT_MAX			99.0	// Input current limit in Amperes (Upper)
+#define MCCONF_L_IN_CURRENT_MAX			60.0	// Input current limit in Amperes (Upper)
 #endif
 #ifndef MCCONF_L_IN_CURRENT_MIN
-#define MCCONF_L_IN_CURRENT_MIN			-60.0	// Input current limit in Amperes (Lower)
+#define MCCONF_L_IN_CURRENT_MIN			-20.0	// Input current limit in Amperes (Lower)
 #endif
 #ifndef MCCONF_L_MAX_ABS_CURRENT
-#define MCCONF_L_MAX_ABS_CURRENT		130.0	// The maximum absolute current above which a fault is generated
+#define MCCONF_L_MAX_ABS_CURRENT		150.0	// The maximum absolute current above which a fault is generated
 #endif
 #ifndef MCCONF_L_MIN_VOLTAGE
-#define MCCONF_L_MIN_VOLTAGE			8.0		// Minimum input voltage
+#define MCCONF_L_MIN_VOLTAGE			24.0		// Minimum input voltage
 #endif
 #ifndef MCCONF_L_MAX_VOLTAGE
-#define MCCONF_L_MAX_VOLTAGE			57.0	// Maximum input voltage
+#define MCCONF_L_MAX_VOLTAGE			84.0	// Maximum input voltage
 #endif
 #ifndef MCCONF_L_BATTERY_CUT_START
-#define MCCONF_L_BATTERY_CUT_START		10.0	// Start limiting the positive current at this voltage
+#define MCCONF_L_BATTERY_CUT_START		40.0	// Start limiting the positive current at this voltage
 #endif
 #ifndef MCCONF_L_BATTERY_CUT_END
-#define MCCONF_L_BATTERY_CUT_END		8.0		// Limit the positive current completely at this voltage
+#define MCCONF_L_BATTERY_CUT_END		36.0		// Limit the positive current completely at this voltage
 #endif
 #ifndef MCCONF_L_RPM_MAX
 #define MCCONF_L_RPM_MAX				100000.0	// The motor speed limit (Upper)
@@ -102,10 +102,10 @@
 #define MCCONF_L_LIM_TEMP_ACCEL_DEC		0.15	// Decrease temperature limits this much during acceleration
 #endif
 #ifndef MCCONF_L_WATT_MAX
-#define MCCONF_L_WATT_MAX				1500000.0	// Maximum wattage output
+#define MCCONF_L_WATT_MAX				5000.0	// Maximum wattage output
 #endif
 #ifndef MCCONF_L_WATT_MIN
-#define MCCONF_L_WATT_MIN				-1500000.0	// Minimum wattage output (braking)
+#define MCCONF_L_WATT_MIN				-1000.0	// Minimum wattage output (braking)
 #endif
 #ifndef MCCONF_L_CURRENT_MAX_SCALE
 #define MCCONF_L_CURRENT_MAX_SCALE		1.0	// Maximum current scale
@@ -231,10 +231,10 @@
 #define MCCONF_FOC_CURRENT_KI			50.0
 #endif
 #ifndef MCCONF_FOC_F_SW
-#define MCCONF_FOC_F_SW					25000.0
+#define MCCONF_FOC_F_SW					20000.0
 #endif
 #ifndef MCCONF_FOC_DT_US
-#define MCCONF_FOC_DT_US				0.12 // Microseconds for dead time compensation
+#define MCCONF_FOC_DT_US				0.20 // Microseconds for dead time compensation
 #endif
 #ifndef MCCONF_FOC_ENCODER_INVERTED
 #define MCCONF_FOC_ENCODER_INVERTED		false
@@ -279,7 +279,7 @@
 #define MCCONF_FOC_DUTY_DOWNRAMP_KI		200.0	// PI controller for duty control when decreasing the duty
 #endif
 #ifndef MCCONF_FOC_OPENLOOP_RPM
-#define MCCONF_FOC_OPENLOOP_RPM			1500.0	// Openloop RPM (sensorless low speed or when finding index pulse)
+#define MCCONF_FOC_OPENLOOP_RPM			1000.0	// Openloop RPM (sensorless low speed or when finding index pulse)
 #endif
 #ifndef MCCONF_FOC_OPENLOOP_RPM_LOW
 #define MCCONF_FOC_OPENLOOP_RPM_LOW		0.0		// Fraction of OPENLOOP_RPM at minimum motor current
@@ -288,7 +288,7 @@
 #define MCCONF_FOC_D_GAIN_SCALE_START	0.9		// Start reducing D axis current controller gain at this modulation
 #endif
 #ifndef MCCONF_FOC_D_GAIN_SCALE_MAX_MOD
-#define MCCONF_FOC_D_GAIN_SCALE_MAX_MOD	0.2		// D axis currnet controller gain at maximum modulation
+#define MCCONF_FOC_D_GAIN_SCALE_MAX_MOD	0.5		// D axis currnet controller gain at maximum modulation
 #endif
 #ifndef MCCONF_FOC_SL_OPENLOOP_HYST
 #define MCCONF_FOC_SL_OPENLOOP_HYST		0.1		// Time below min RPM to activate openloop (s)
@@ -327,7 +327,7 @@
 #define MCCONF_FOC_HALL_TAB_7			255
 #endif
 #ifndef MCCONF_FOC_HALL_INTERP_ERPM
-#define MCCONF_FOC_HALL_INTERP_ERPM		500		// Do not interpolate hall sensors below this ERPM
+#define MCCONF_FOC_HALL_INTERP_ERPM		0		// Do not interpolate hall sensors below this ERPM
 #endif
 #ifndef MCCONF_FOC_SL_ERPM
 #define MCCONF_FOC_SL_ERPM				2500.0	// ERPM above which only the observer is used
@@ -465,7 +465,7 @@
 #define MCCONF_SI_MOTOR_POLES			14 // Motor pole count
 #endif
 #ifndef MCCONF_SI_GEAR_RATIO
-#define MCCONF_SI_GEAR_RATIO			3 // Gear ratio
+#define MCCONF_SI_GEAR_RATIO			1 // Gear ratio
 #endif
 #ifndef MCCONF_SI_WHEEL_DIAMETER
 #define MCCONF_SI_WHEEL_DIAMETER		0.083 // Wheel Diameter
@@ -474,7 +474,7 @@
 #define MCCONF_SI_BATTERY_TYPE			BATTERY_TYPE_LIION_3_0__4_2 // Battery Type
 #endif
 #ifndef MCCONF_SI_BATTERY_CELLS
-#define MCCONF_SI_BATTERY_CELLS			3 // Battery Cells
+#define MCCONF_SI_BATTERY_CELLS			14 // Battery Cells
 #endif
 #ifndef MCCONF_SI_BATTERY_AH
 #define MCCONF_SI_BATTERY_AH			6.0 // Battery amp hours
