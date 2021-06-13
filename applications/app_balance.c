@@ -108,6 +108,7 @@ static volatile balance_config balance_conf;
 static volatile imu_config imu_conf;
 static float startup_step_size, tiltback_step_size, torquetilt_step_size, torquetilt_step_size_down, turntilt_step_size, reverse_stop_step_size, reverse_tolerance;
 
+
 // Runtime values read from elsewhere
 static float pitch_angle, last_pitch_angle, roll_angle, abs_roll_angle, abs_roll_angle_sin;
 static float gyro[3];
@@ -201,7 +202,8 @@ void app_balance_configure(balance_config *conf, imu_config *conf2) {
 	tiltback_step_size = balance_conf.tiltback_speed / balance_conf.hertz;
 	torquetilt_step_size = balance_conf.torquetilt_speed / balance_conf.hertz;
 	turntilt_step_size = balance_conf.turntilt_speed / balance_conf.hertz;
-	reverse_stop_step_size = 100.0 / balance_conf.hertz;
+	reverse_stop_step_size = /*balance_conf.revstop_distance*/ 100.0 / balance_conf.hertz;
+
 	use_soft_start = (balance_conf.startup_speed < 10);
 
 	float startup_speed = balance_conf.startup_speed;
@@ -301,6 +303,7 @@ void app_balance_configure(balance_config *conf, imu_config *conf2) {
 	}
 
 	disable_all_5_3_features = (balance_conf.deadzone != 0);
+
 	if (disable_all_5_3_features) {
 		use_soft_start = false;
 		use_reverse_stop = false;
