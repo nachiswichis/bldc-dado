@@ -106,7 +106,8 @@ static thread_t *app_thread;
 // Config values
 static volatile balance_config balance_conf;
 static volatile imu_config imu_conf;
-static float startup_step_size, tiltback_step_size, torquetilt_step_size, torquetilt_step_size_down, turntilt_step_size, reverse_stop_step_size;
+static float startup_step_size, tiltback_step_size, torquetilt_step_size, torquetilt_step_size_down, turntilt_step_size, reverse_stop_step_size, reverse_tolerance;
+
 
 // Runtime values read from elsewhere
 static float pitch_angle, last_pitch_angle, roll_angle, abs_roll_angle, abs_roll_angle_sin;
@@ -120,6 +121,7 @@ static SwitchState switch_state;
 
 // Rumtime state values
 static BalanceState state;
+int log_balance_state;	// not static so we can log it
 static float proportional, integral, derivative;
 static float last_proportional, abs_proportional;
 static float pid_value;
@@ -200,14 +202,21 @@ void app_balance_configure(balance_config *conf, imu_config *conf2) {
 	tiltback_step_size = balance_conf.tiltback_speed / balance_conf.hertz;
 	torquetilt_step_size = balance_conf.torquetilt_speed / balance_conf.hertz;
 	turntilt_step_size = balance_conf.turntilt_speed / balance_conf.hertz;
-	reverse_stop_step_size = /*balance_conf.revstop_distance*/100 / balance_conf.hertz;
+	reverse_stop_step_size = /*balance_conf.revstop_distance*/ 100.0 / balance_conf.hertz;
+
 	use_soft_start = (balance_conf.startup_speed < 10);
 
 	float startup_speed = balance_conf.startup_speed;
 	int ss = (int) startup_speed;
 	float ss_rest = startup_speed - ss;
-	if ((ss_rest > 0.09) && (ss_rest < 0.11))
+	if ((ss_rest > 0.09) && (ss_rest < 0.11)) {
 		use_reverse_stop = true;
+		reverse_tolerance = 50000;
+	}
+	else if ((ss_rest > 0.19) && (ss_rest < 0.21)) {
+		use_reverse_stop = true;
+		reverse_tolerance = 100000;
+	}
 	else
 		use_reverse_stop = false;
 
@@ -294,6 +303,11 @@ void app_balance_configure(balance_config *conf, imu_config *conf2) {
 	}
 
 	disable_all_5_3_features = (balance_conf.deadzone != 0);
+
+	if (disable_all_5_3_features) {
+		use_soft_start = false;
+		use_reverse_stop = false;
+	}
 
 	switch (app_get_configuration()->shutdown_mode) {
 	case SHUTDOWN_MODE_OFF_AFTER_10S: autosuspend_timeout = 10; break;
@@ -437,12 +451,17 @@ bool check_faults(bool ignoreTimers){
 			state = FAULT_SWITCH_FULL;
 			return true;
 		}
+		else if (abs_erpm > 3000) {
+			// above 3k erpm (~7mph on a 11 inch onewheel tire) don't ever produce switch faults!
+			fault_switch_timer = current_time;
+		}
 	} else {
 		fault_switch_timer = current_time;
 	}
 
 	if(setpointAdjustmentType == REVERSESTOP){
-		if (fabsf(pitch_angle) > 15) {
+		if ((fabsf(pitch_angle) > 15) || (switch_state == OFF)) {
+			// Taking your foot off while reversing? Ignore delays
 			state = FAULT_SWITCH_FULL;
 			return true;
 		}
@@ -510,7 +529,6 @@ void calculate_setpoint_target(void){
 	else if (setpointAdjustmentType == REVERSESTOP) {
 		// accumalete erpms:
 		reverse_total_erpm += erpm;
-		float reverse_tolerance = 50000;
 		if (fabsf(reverse_total_erpm) > reverse_tolerance) {
 			// tilt down by 10 degrees after 50k aggregate erpm
 			setpoint_target = 10 * REVERSE_ERPM_REPORTING * (fabsf(reverse_total_erpm)-reverse_tolerance) / 50000;
@@ -977,6 +995,7 @@ static THD_FUNCTION(balance_thread, arg) {
 				}
 				reset_vars();
 				state = FAULT_STARTUP; // Trigger a fault so we need to meet start conditions to start
+				log_balance_state = state;
 
 				// Let the rider know that the board is ready
 				beep_on(1);
@@ -1004,6 +1023,7 @@ static THD_FUNCTION(balance_thread, arg) {
 			case (RUNNING_TILTBACK_HIGH_VOLTAGE):
 			case (RUNNING_TILTBACK_LOW_VOLTAGE):
 			case (RUNNING_TILTBACK_CONSTANT):
+				log_balance_state = state + 100 * setpointAdjustmentType;
 				autosuspend_timer = -1;
 
 				// Check for faults
@@ -1114,6 +1134,9 @@ static THD_FUNCTION(balance_thread, arg) {
 			case (FAULT_SWITCH_HALF):
 			case (FAULT_SWITCH_FULL):
 			case (FAULT_STARTUP):
+				if (log_balance_state != FAULT_DUTY)
+					log_balance_state = state;
+
 				if (autosuspend_timer == -1)
 					autosuspend_timer = current_time;
 
@@ -1155,6 +1178,7 @@ static THD_FUNCTION(balance_thread, arg) {
 				brake();
 				break;
 			case (FAULT_DUTY):
+				log_balance_state = FAULT_DUTY;
 				new_ride_state = RIDE_OFF;
 				// We need another fault to clear duty fault.
 				// Otherwise duty fault will clear itself as soon as motor pauses, then motor will spool up again.
